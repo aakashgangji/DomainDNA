@@ -1,0 +1,157 @@
+body {
+  margin: 0;
+}
+
+@keyframes moveClouds {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 70px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  margin-bottom: 0;
+  filter: drop-shadow(0 0 10px rgb(0, 0, 0));
+}
+
+.searchWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.searchContainer {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 15px 50px 15px 20px;
+  font-size: 18px;
+  color: #e0e0e0;
+  background-color: rgba(255,255,255,0.1);
+  border: 2px solid #4a4a4a;
+  border-radius: 25px;
+}
+
+.input::placeholder {
+   color: rgba(224,224,224,0.7);
+}
+
+.iconContainer {
+   position: absolute; 
+   right: 15px; 
+   top: 50%; 
+   transform: translateY(-50%);
+   color: #e0e0e0; 
+   background: none; 
+   border: none; 
+   cursor: pointer; 
+   padding: 5px; 
+}
+
+.glow {
+   position: absolute; 
+   top: -2px; 
+   left: -2px; 
+   right: -2px; 
+   bottom: -2px; 
+   background: linear-gradient(45deg,#4a4a4a,#e0e0e0); 
+   filter: blur(20px); 
+   border-radius: 28px; 
+   z-index: -1; 
+   opacity: .3; 
+   animation: hauntedPulse 3s infinite; 
+}
+
+@keyframes hauntedPulse {
+   from {opacity: .2;}
+   to {opacity: .4;}
+}
+
+.results-container {
+   display: flex; 
+   flex-direction: column; 
+   gap: 1rem; 
+   margin-top: 2rem; 
+}
+
+.mt-8 {
+  margin-top: 2rem;
+}
+
+.bg-white {
+  background-color: white;
+}
+
+.rounded-lg {
+  border-radius: 0.5rem;
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+
+.max-w-md {
+  max-width: 28rem;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.mb-4 {
+  margin-bottom: 1rem;
+}
+
+.flex {
+  display: flex;
+}
+
+.space-x-4 > * + * {
+  margin-left: 1rem;
+}
+
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+.hover\:underline:hover {
+  text-decoration: underline;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.ml-4 {
+  margin-left: 1rem;
+}
