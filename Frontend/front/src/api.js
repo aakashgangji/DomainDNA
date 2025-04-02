@@ -1,76 +1,159 @@
 import axios from 'axios';
 
-// Create an instance of axios with a base URL
+// 1. Axios Instance with Timeout
 const api = axios.create({
-  baseURL: 'http://localhost:8081/api/v1',  
+  baseURL: 'http://localhost:8081/api/v1',
+  timeout: 10000, // 10 seconds
 });
 
-// Function to suggest product names based on product description
+// 2. Circuit Breaker State
+const circuitBreaker = {
+  illegalActivity: {
+    isOpen: false,
+    lastFailure: 0,
+    resetTimeout: 30000, // 30 seconds
+  },
+  domainOffering: {
+    isOpen: false,
+    lastFailure: 0,
+    resetTimeout: 30000,
+  },
+};
+
+// 3. Helper: Check Circuit Breaker Status
+function checkCircuitBreaker(endpoint) {
+  const now = Date.now();
+  if (circuitBreaker[endpoint].isOpen) {
+    if (now - circuitBreaker[endpoint].lastFailure > circuitBreaker[endpoint].resetTimeout) {
+      circuitBreaker[endpoint].isOpen = false; // Reset after timeout
+    } else {
+      throw new Error(`Service temporarily unavailable for ${endpoint}. Try again later.`);
+    }
+  }
+}
+
+// 4. Helper: Retry with Exponential Backoff
+async function withRetries(fn, args, maxRetries = 3) {
+  let retries = 0;
+  let lastError;
+
+  while (retries < maxRetries) {
+    try {
+      return await fn(...args);
+    } catch (error) {
+      lastError = error;
+      retries++;
+      if (retries >= maxRetries) break;
+      await new Promise(resolve => setTimeout(resolve, 1000 * Math.pow(2, retries))); // Exponential backoff
+    }
+  }
+
+  throw lastError; // Throw the last error after max retries
+}
+
+// 5. Helper: Validate Inputs
+function validateDomainName(domainName) {
+  if (!domainName || typeof domainName !== 'string' || !domainName.includes('.')) {
+    throw new Error('Invalid domain name format');
+  }
+}
+
+// --- API Functions ---
+
+// A. Suggest Product Names (No retries needed)
 export async function suggestProductNames(description) {
+  if (!description?.trim()) throw new Error('Description cannot be empty');
+  
   try {
-    const response = await api.post('/product-names', {
-      description: description
-    });
-    console.log('Suggested Product Names:', response.data);
-    return response.data;  // Array of objects with product_name property
+    const response = await api.post('/product-names', { description });
+    return response.data;
   } catch (error) {
-    console.error('Error suggesting product names:', error.response?.data || error.message);
-    throw error;  // Re-throw the error to handle it in the calling function
+    console.error('Product suggestion failed:', {
+      error: error.message,
+      request: { description },
+      response: error.response?.data,
+    });
+    throw error;
   }
 }
 
-// Function to suggest domain names based on product name
+// B. Suggest Domain Names (No retries needed)
 export async function suggestDomainNames(productName) {
+  if (!productName?.trim()) throw new Error('Product name cannot be empty');
+  
   try {
-    const response = await api.post('/domain-names', {
-      product_name: productName
-    });
-    console.log('Suggested Domain Names:', response.data);
-    return response.data;  // Array of objects with domain_name and available properties
+    const response = await api.post('/domain-names', { product_name: productName });
+    return response.data;
   } catch (error) {
-    console.error('Error suggesting domain names:', error.response?.data || error.message);
-    throw error;  // Re-throw the error to handle it in the calling function
+    console.error('Domain suggestion failed:', {
+      error: error.message,
+      request: { productName },
+      response: error.response?.data,
+    });
+    throw error;
   }
 }
 
-// Function to check illegal activity for a domain name
+// C. Check Illegal Activity (With Circuit Breaker + Retries)
 export async function checkIllegalActivity(domainName) {
+  validateDomainName(domainName);
+  checkCircuitBreaker('illegalActivity');
+
   try {
-    const response = await api.post('/domain-research/illegal-activity', {
-      domain_name: domainName, need_detailed_report: false
-    });
-    console.log('Illegal Activity Check:', response.data);
-    return response.data;  // Object with illegal_activity boolean and optional details string
+    const response = await withRetries(
+      api.post,
+      ['/domain-research/illegal-activity', { 
+        domain_name: domainName, 
+        need_detailed_report: false 
+      }]
+    );
+    return response.data;
   } catch (error) {
-    console.error('Error checking illegal activity:', error.response?.data || error.message);
-    throw error;  // Re-throw the error to handle it in the calling function
+    console.error('Illegal activity check failed:', {
+      error: error.message,
+      domain: domainName,
+    });
+    circuitBreaker.illegalActivity.isOpen = true;
+    circuitBreaker.illegalActivity.lastFailure = Date.now();
+    throw new Error(`Cannot check illegal activity. ${error.message}`);
   }
 }
 
-// Function to check past offerings of a domain name
+// D. Check Domain Offerings (With Circuit Breaker + Retries)
 export async function checkDomainOffering(domainName) {
+  validateDomainName(domainName);
+  checkCircuitBreaker('domainOffering');
+
   try {
-    const response = await api.post('/domain-research/offering', {
-      domain_name: domainName
-    });
-    console.log('Domain Offerings:', response.data);
-    return response.data;  // Object with domain_name and use_case properties
+    const response = await withRetries(
+      api.post,
+      ['/domain-research/offering', { domain_name: domainName }]
+    );
+    return response.data;
   } catch (error) {
-    console.error('Error checking domain offerings:', error.response?.data || error.message);
-    throw error;  // Re-throw the error to handle it in the calling function
+    console.error('Domain offering check failed:', {
+      error: error.message,
+      domain: domainName,
+    });
+    circuitBreaker.domainOffering.isOpen = true;
+    circuitBreaker.domainOffering.lastFailure = Date.now();
+    throw new Error(`Cannot check domain history. ${error.message}`);
   }
 }
 
-// Function to check domain name availability
+// E. Check Domain Availability (Simple request)
 export async function checkDomainAvailability(domainName) {
+  validateDomainName(domainName);
+
   try {
-    const response = await api.post('/domain-availability', {
-      domain_name: domainName
-    });
-    console.log('Domain Availability:', response.data);
-    return response.data;  // Object with available boolean
+    const response = await api.post('/domain-availability', { domain_name: domainName });
+    return response.data;
   } catch (error) {
-    console.error('Error checking domain availability:', error.response?.data || error.message);
-    throw error;  // Re-throw the error to handle it in the calling function
+    console.error('Availability check failed:', {
+      error: error.message,
+      domain: domainName,
+      response: error.response?.data,
+    });
+    throw new Error(`Cannot check availability. ${error.message}`);
   }
 }
