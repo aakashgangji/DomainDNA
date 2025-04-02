@@ -1,0 +1,27 @@
+{
+  "manifest_version": 3,
+  "name": "Faith",
+  "version": "1.0",
+  "description": "Unmasking the haunted histories of domains so you don’t get spooked online.",
+  "permissions": ["storage", "activeTab", "scripting"],
+  "host_permissions": [
+    "http://localhost:8081/*",
+    "http://localhost/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "32": "/icons/32w.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],  
+      "js": ["content.js"],    
+      "run_at": "document_idle"
+    }
+  ]
+}
