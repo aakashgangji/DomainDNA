@@ -8,8 +8,7 @@ Verify if the domain you want to buy is Haunted or not?
 ```bash
 export BRAVE_SEARCH_AI_API_KEY= yourpapikey
 
-export gemini=AIzaSyC8qDSoWexgRMAauzX9NFP49sDPyhxbe-g
-
+export gemini=your gemini key
 ```
 
 #### Nginx
