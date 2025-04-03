@@ -35,7 +35,7 @@ const ProductCard = ({ productInfo }) => {
                               <p className="font-bold">Offering:</p>
                               <div className="flex flex-wrap gap-2">
                                 {domain.offering.split(',').map((offering: string, index: number) => (
-                                  <span key={index} className="badge badge-outline badge-primary">{offering.trim()}</span>
+                                  <span key={index}>{offering.trim()}</span>
                                 ))}
                               </div>
                             </div>
