@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Faith",
+  "name": "Domain DNA",
   "version": "1.0",
   "description": "Unmasking the haunted histories of domains so you don’t get spooked online.",
   "permissions": ["storage", "activeTab", "scripting"],
