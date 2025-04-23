@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 1. Axios Instance with Timeout
 const api = axios.create({
-  baseURL: 'http://localhost:8081/api/v1',
+  baseURL: 'https://domaindna.onrender.com',
   timeout: 10000, // 10 seconds
 });
 
