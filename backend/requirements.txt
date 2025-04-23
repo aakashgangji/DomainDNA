@@ -1,0 +1,9 @@
+fastapi
+pydantic
+uvicorn
+tqdm
+requests
+pyyaml
+dataclasses
+python-whois
+google-generativeai
