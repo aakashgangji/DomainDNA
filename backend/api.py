@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 import main
 
-app = FastAPI(root_path='/api/v1')
+app = FastAPI()
 
 # Add CORS middleware to the app
 app.add_middleware(
