@@ -6,7 +6,7 @@ from pydantic import BaseModel, ValidationError
 from typing import Optional
 
 # Set up Gemini API
-genai.configure(api_key="AIzaSyB9XeND-lh978DqamBf-pwWCpKr6vjc-Z4")
+genai.configure(api_key=XXX)
 
 @dataclasses.dataclass
 class Message:
