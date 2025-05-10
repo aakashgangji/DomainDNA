@@ -8,10 +8,10 @@ from typing import List, Dict, Any, Tuple
 import google.generativeai as genai
 
 # Set up Gemini API
-genai.configure(api_key="AIzaSyB9XeND-lh978DqamBf-pwWCpKr6vjc-Z4")
+genai.configure(api_key=XXX)
 
 # Set Brave Search API key
-BRAVE_SEARCH_API_KEY = "BSACQzu2oJNvn3ExnqB4PkMtmp5WbJz"
+BRAVE_SEARCH_API_KEY = XXX
 
 # ===
 # URL Content Grabber
