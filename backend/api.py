@@ -18,7 +18,7 @@ app.add_middleware(
 import os
 
 # Set up Gemini API key
-os.environ["GEMINI_API_KEY"] = "AIzaSyC8qDSoWexgRMAauzX9NFP49sDPyhxbe-g"
+os.environ["GEMINI_API_KEY"] = #XXX
 
 # Models
 
